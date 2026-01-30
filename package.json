@@ -1,9 +1,9 @@
 {
-  "name": "neblo-ext-demo",
-  "displayName": "Neblo ext demo",
+  "name": "neblo-ext",
+  "displayName": "Neblo extension for amazon relay",
   "version": "0.0.1",
   "description": "A basic Plasmo extension.",
-  "author": "Plasmo Corp. <foss@plasmo.com>",
+  "author": "areeb",
   "scripts": {
     "dev": "plasmo dev",
     "build": "plasmo build",
@@ -27,8 +27,21 @@
   },
   "manifest": {
     "host_permissions": [
-      "https://*/*"
-    ]
+      "http://localhost/*",
+      "https://localhost/*",
+      "https://relay.amazon.com/*"
+    ],
+    "permissions": [
+      "storage",
+      "tabs"
+    ],
+    "background": {
+      "service_worker": "background.ts"
+    },
+    "options_ui": {
+      "page": "options.html",
+      "open_in_tab": true
+    }
   },
   "packageManager": "pnpm@9.12.2+sha512.22721b3a11f81661ae1ec68ce1a7b879425a1ca5b991c975b074ac220b187ce56c708fe5db69f4c962c989452eee76c82877f4ee80f474cebd61ee13461b6228"
 }
