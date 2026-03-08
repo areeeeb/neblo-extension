@@ -1,0 +1,51 @@
+/**
+ * Amazon Relay loadboard DOM selectors and constants.
+ * Centralized here so UI changes only need updating in one place.
+ */
+
+export const RELAY_URL = "https://relay.amazon.com/loadboard/search"
+
+export const RELAY_SELECTORS = {
+  searchPanel: ".search__panel",
+  equipment: '[aria-label="Equipment*"]',
+  originRadiusLabel: "rlb-origin-radius-filter-label",
+  destRegionFilter: "rlb-destination-region-city-filter",
+  destCityInput:
+    '[aria-labelledby="rlb-destination-city-filter-value rlb-destination-city-filter-label"]',
+  destRadiusDropdown: "rlb-destination-radius-filter-value",
+  excludedCityInput: '[placeholder="Search cities"]',
+  startDateFilter: "rlb-start-date-filter",
+  startTimeFilter: "rlb-start-time-filter",
+  endDateFilter: "rlb-end-date-filter",
+  endTimeFilter: "rlb-end-time-filter",
+  refreshSvgPath:
+    '[d="M20.128 2l-.493 5.635L14 7.142M19.44 6.935a9 9 0 101.023 8.134"]',
+  loadList: "load-list",
+  loadCard: "load-card",
+  savedSearchListBox: "saved-search__list__box",
+  saveSearchNameInput: '[aria-label="Save search name"]',
+} as const
+
+/** Text labels used for getElementByText lookups on the Relay page. */
+export const RELAY_LABELS = {
+  newSearch: "New Search",
+  savedSearches: "Saved searches",
+  apply: "Apply",
+  saveThisSearch: "Save this search",
+  save: "Save",
+  seeMoreEquipment: "See more equipment",
+  destCityOption: "City",
+  pricePerMileMin: "Price/mile (min)",
+  payoutMin: "Payout (min)",
+  equipmentParents: {
+    powerOnly: "Power only",
+    tractorTrailer: "Tractor & Trailer",
+    boxTruck: "Box truck",
+  },
+  workTypes: ["Block", "Hostler/Shuttle", "One-Way/Round Trip"],
+} as const
+
+export const RELAY_MARKER = {
+  className: "neblo-marked",
+  text: "Scanned by Neblo"
+} as const
