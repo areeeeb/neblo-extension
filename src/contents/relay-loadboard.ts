@@ -64,7 +64,7 @@ async function handleTurn(search: SavedSearch, isFirstTime: boolean): Promise<vo
       console.log(`[Neblo] Setup ${success ? "succeeded" : "aborted"} for: "${search.uniqueName}"`)
     } else {
       console.log(`[Neblo] Monitoring turn: "${search.uniqueName}"`)
-      await doMonitoringPass(shouldContinue)
+      await doMonitoringPass(shouldContinue, search.uniqueName)
     }
   } catch (error) {
     console.error("[Neblo] Unhandled error during turn:", error)
@@ -91,6 +91,14 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     // The actual completion signal comes later via the TURN_COMPLETE message.
     sendResponse({ received: true })
     handleTurn(message.search as SavedSearch, message.isFirstTime as boolean)
+    return false
+  }
+
+  if (message.type === "LOADS_TO_BOOK") {
+    const loads = message.loads as unknown[]
+    console.log(`[Neblo] Received ${loads.length} load(s) to book:`, loads)
+    // TODO: implement book button click here. right now that line is removed as to not accidentally book the loads
+    sendResponse({ received: true })
     return false
   }
 

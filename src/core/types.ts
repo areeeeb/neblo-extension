@@ -40,12 +40,28 @@ export interface SearchPreferences {
 }
 
 // ============================================
+// API Configuration (stored in chrome.storage.sync)
+// ============================================
+
+export interface ApiConfigSettings {
+  baseUrl: string
+  apiKey: string
+  companyCode: string
+  adapterCode: string
+}
+
+export const DEFAULT_API_CONFIG: ApiConfigSettings = {
+  baseUrl: "https://dev-be.neblo.ai/api/extension",
+  apiKey: "",
+  companyCode: "",
+  adapterCode: ""
+}
+
+// ============================================
 // Auth Types (for Tasks #1-2)
 // ============================================
 
 export interface AuthState {
   isLoggedIn: boolean
-  companyId?: string
   companyName?: string
-  token?: string
 }

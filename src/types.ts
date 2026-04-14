@@ -22,9 +22,6 @@ export interface ExtensionSettings {
   workTypes: string[];
   driverTypes: string[];
   loadTypes: string[];
-  apiEndpoint: string;
-  groupName: string;
-  groupId: string;
 }
 
 // City list shared between options page city pickers
@@ -156,10 +153,14 @@ export type ExtensionMessage =
   | { type: 'API_CREATE_LOAD'; apiEndpoint: string; load: APILoad }
   | { type: 'API_GET_BOOKED_LOADS'; apiEndpoint: string }
   | { type: 'API_MARK_LOAD_COVERED'; apiEndpoint: string; loadId: string }
-  | { type: 'API_GET_CREDENTIALS'; companyName: string }
-  | { type: 'API_GET_2FA_CODE'; companyName: string }
+  | { type: 'API_GET_ADAPTER'; adapterType: string }
+  | { type: 'API_GET_CREDENTIALS' }
+  | { type: 'API_GET_2FA_CODE' }
   | { type: 'API_GET_SEARCHES' }
-  | { type: 'API_SEND_LOADS'; companyName: string; searchUniqueName: string; loads: import("~/core/api/types").ScrapedLoad[] };
+  | { type: 'API_SEND_LOADS'; searchUniqueName: string; loads: import("~/core/api/types").LoadPayload[] }
+  | { type: 'API_GET_LOADS_TO_BOOK' }
+  | { type: 'API_UPDATE_LOAD_STATUS'; loadId: string; status: import("~/core/api/types").LoadStatus }
+  | { type: 'LOGIN_CHECK' };
 
 // Default settings
 export const DEFAULT_SETTINGS: ExtensionSettings = {
@@ -176,7 +177,4 @@ export const DEFAULT_SETTINGS: ExtensionSettings = {
   workTypes: [],
   driverTypes: [],
   loadTypes: [],
-  apiEndpoint: 'http://localhost:3001/api/loads',
-  groupName: 'NEBLO EXTENSION BOT',
-  groupId: '@-neblo-ext'
 };

@@ -1,0 +1,1057 @@
+{
+  "info": {
+    "_postman_id": "a6d792ed-d374-46be-840a-910fc623f4df",
+    "name": "Extension",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "8266562"
+  },
+  "item": [
+    {
+      "name": "Get Adapter",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"adapterType\": \"PRIVATE_AMAZON_RELAY_PORTAL\",\n    \"companyCode\": \"DITR-MC1062178\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://dev-be.neblo.ai/api/extension/get_adapter",
+          "protocol": "https",
+          "host": [
+            "dev-be",
+            "neblo",
+            "ai"
+          ],
+          "path": [
+            "api",
+            "extension",
+            "get_adapter"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Adapter",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"adapterType\": \"PRIVATE_AMAZON_RELAY_PORTAL\",\n    \"companyCode\": \"DITR-MC1062178\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://dev-be.neblo.ai/api/extension/get_adapter",
+              "protocol": "https",
+              "host": [
+                "dev-be",
+                "neblo",
+                "ai"
+              ],
+              "path": [
+                "api",
+                "extension",
+                "get_adapter"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Mar 2026 00:46:43 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "3176"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "vary",
+              "value": "Accept, origin"
+            },
+            {
+              "key": "allow",
+              "value": "OPTIONS, POST"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "referrer-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "cross-origin-opener-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "x-request-id",
+              "value": "4686406f-bbb8-4c55-b572-f85e2d20bb35"
+            },
+            {
+              "key": "x-processing-time-ms",
+              "value": "35.03"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": null,\n    \"status_code\": 200,\n    \"data\": {\n        \"id\": 22,\n        \"company_detail\": {\n            \"id\": 368,\n            \"company_name\": \"DIRILIS TRANS INC\",\n            \"mc_number\": \"1062178\",\n            \"dot_number\": \"3332434\",\n            \"company_type\": 2,\n            \"company_type_name\": \"Carrier\",\n            \"status\": \"Active\",\n            \"created_at\": \"2026-02-25T20:28:09.730270Z\"\n        },\n        \"adapter_detail\": {\n            \"id\": \"20ebfb41-1e79-4a1c-b930-35a0a6f82cf1\",\n            \"adapter_type_detail\": {\n                \"id\": 6,\n                \"code\": \"PRIVATE_AMAZON_RELAY_PORTAL\",\n                \"description\": \"Integration via carrier-provided credentials to amazon relay portal\",\n                \"created_at\": \"2026-02-25T20:25:05.752170Z\"\n            },\n            \"adapter_type_code\": \"PRIVATE_AMAZON_RELAY_PORTAL\",\n            \"capabilities\": [\n                {\n                    \"id\": \"5b1f55de-a3b9-423b-bfd3-e6a6116432fd\",\n                    \"capability_type_detail\": {\n                        \"id\": 4,\n                        \"code\": \"SEARCH_LOADS\",\n                        \"description\": \"Search loads by criteria\",\n                        \"created_at\": \"2026-02-09T20:14:48.097715Z\"\n                    },\n                    \"capability_type_code\": \"SEARCH_LOADS\",\n                    \"capability_specifics_json\": {},\n                    \"capability_description\": null,\n                    \"created_at\": \"2026-02-28T02:42:28.855098Z\",\n                    \"updated_at\": \"2026-02-28T02:42:28.855108Z\",\n                    \"adapter\": \"20ebfb41-1e79-4a1c-b930-35a0a6f82cf1\",\n                    \"capability_type\": 4\n                },\n                {\n                    \"id\": \"d9d071bb-b9fc-4eed-9298-c0f95485734c\",\n                    \"capability_type_detail\": {\n                        \"id\": 3,\n                        \"code\": \"FETCH_LOAD\",\n                        \"description\": \"Fetch specific load details\",\n                        \"created_at\": \"2026-02-09T20:14:48.095171Z\"\n                    },\n                    \"capability_type_code\": \"FETCH_LOAD\",\n                    \"capability_specifics_json\": {},\n                    \"capability_description\": null,\n                    \"created_at\": \"2026-02-28T02:42:28.859598Z\",\n                    \"updated_at\": \"2026-02-28T02:42:28.859607Z\",\n                    \"adapter\": \"20ebfb41-1e79-4a1c-b930-35a0a6f82cf1\",\n                    \"capability_type\": 3\n                },\n                {\n                    \"id\": \"180bf343-d6d4-42a3-86b7-c6f899bef29e\",\n                    \"capability_type_detail\": {\n                        \"id\": 35,\n                        \"code\": \"INGEST_LOADS\",\n                        \"description\": \"Receive scraped/pushed loads from external source\",\n                        \"created_at\": \"2026-02-28T02:42:28.845826Z\"\n                    },\n                    \"capability_type_code\": \"INGEST_LOADS\",\n                    \"capability_specifics_json\": {},\n                    \"capability_description\": null,\n                    \"created_at\": \"2026-02-28T02:42:28.863080Z\",\n                    \"updated_at\": \"2026-02-28T02:42:28.863089Z\",\n                    \"adapter\": \"20ebfb41-1e79-4a1c-b930-35a0a6f82cf1\",\n                    \"capability_type\": 35\n                }\n            ],\n            \"adapter_name\": \"Amazon Relay Private Portal\",\n            \"adapter_display_name\": \"Amazon Relay Private\",\n            \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\",\n            \"is_active\": true,\n            \"created_at\": \"2026-02-28T02:42:28.850280Z\",\n            \"updated_at\": \"2026-03-01T06:11:22.091282Z\",\n            \"adapter_type\": 6\n        },\n        \"company_name\": \"DIRILIS TRANS INC\",\n        \"adapter_name\": \"Amazon Relay Private Portal\",\n        \"has_credentials\": true,\n        \"credential_keys\": {\n            \"email\": \"••••••\",\n            \"password\": \"••••••\"\n        },\n        \"health_status\": {\n            \"last_execution_at\": \"2026-03-09T00:44:20.377637Z\",\n            \"last_successful_execution_at\": \"2026-03-09T00:44:20.377637Z\",\n            \"consecutive_failures\": 0,\n            \"last_error\": null,\n            \"status\": \"healthy\",\n            \"reason\": \"Last execution succeeded\"\n        },\n        \"token_expiry\": null,\n        \"auth_credentials\": {\n            \"email\": \"writeumair@gmail.com\",\n            \"password\": \"avc\"\n        },\n        \"config\": {},\n        \"name\": \"\",\n        \"is_logged_in\": false,\n        \"mfa_required\": false,\n        \"created_at\": \"2026-02-28T08:37:02.994455Z\",\n        \"updated_at\": \"2026-03-09T00:44:20.378937Z\",\n        \"is_active\": true,\n        \"last_execution_at\": \"2026-03-09T00:44:20.377637Z\",\n        \"last_execution_success\": true,\n        \"last_execution_capability\": \"SEARCH_LOADS\",\n        \"last_execution_error\": null,\n        \"last_successful_execution_at\": \"2026-03-09T00:44:20.377637Z\",\n        \"consecutive_failures\": 0,\n        \"company\": 368,\n        \"adapter\": \"20ebfb41-1e79-4a1c-b930-35a0a6f82cf1\"\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Credentials",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://dev-be.neblo.ai/api/extension/credentials",
+          "protocol": "https",
+          "host": [
+            "dev-be",
+            "neblo",
+            "ai"
+          ],
+          "path": [
+            "api",
+            "extension",
+            "credentials"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Credentials",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://dev-be.neblo.ai/api/extension/credentials",
+              "protocol": "https",
+              "host": [
+                "dev-be",
+                "neblo",
+                "ai"
+              ],
+              "path": [
+                "api",
+                "extension",
+                "credentials"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Mar 2026 00:46:46 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "89"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "vary",
+              "value": "Accept, origin"
+            },
+            {
+              "key": "allow",
+              "value": "OPTIONS, POST"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "referrer-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "cross-origin-opener-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "x-request-id",
+              "value": "40abd3eb-1687-4310-8762-c6598ea36aaf"
+            },
+            {
+              "key": "x-processing-time-ms",
+              "value": "25.79"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": null,\n    \"status_code\": 200,\n    \"data\": {\n        \"email\": \"writeumair@gmail.com\",\n        \"password\": \"avc\"\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "2FA Code",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://dev-be.neblo.ai/api/extension/2fa-code",
+          "protocol": "https",
+          "host": [
+            "dev-be",
+            "neblo",
+            "ai"
+          ],
+          "path": [
+            "api",
+            "extension",
+            "2fa-code"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "2FA Code",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://dev-be.neblo.ai/api/extension/2fa-code",
+              "protocol": "https",
+              "host": [
+                "dev-be",
+                "neblo",
+                "ai"
+              ],
+              "path": [
+                "api",
+                "extension",
+                "2fa-code"
+              ]
+            }
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Mar 2026 00:46:51 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "60"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "vary",
+              "value": "Accept, origin"
+            },
+            {
+              "key": "allow",
+              "value": "OPTIONS, POST"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "referrer-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "cross-origin-opener-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "x-request-id",
+              "value": "d192dad2-0d33-472c-bf89-5367af0b76f0"
+            },
+            {
+              "key": "x-processing-time-ms",
+              "value": "6.94"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": \"No MFA code stored\",\n    \"status_code\": 404,\n    \"data\": null\n}"
+        }
+      ]
+    },
+    {
+      "name": "Searches",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://dev-be.neblo.ai/api/extension/searches",
+          "protocol": "https",
+          "host": [
+            "dev-be",
+            "neblo",
+            "ai"
+          ],
+          "path": [
+            "api",
+            "extension",
+            "searches"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Searches",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://dev-be.neblo.ai/api/extension/searches",
+              "protocol": "https",
+              "host": [
+                "dev-be",
+                "neblo",
+                "ai"
+              ],
+              "path": [
+                "api",
+                "extension",
+                "searches"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Mar 2026 00:47:26 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "1341"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "vary",
+              "value": "Accept, origin"
+            },
+            {
+              "key": "allow",
+              "value": "OPTIONS, POST"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "referrer-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "cross-origin-opener-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "x-request-id",
+              "value": "a4c76dd8-064d-4179-af21-1ce29b34aff6"
+            },
+            {
+              "key": "x-processing-time-ms",
+              "value": "13.09"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": null,\n    \"status_code\": 200,\n    \"data\": {\n        \"scrape_status\": \"stop\",\n        \"searches\": [\n            {\n                \"uniqueName\": \"Neb_areeb-test\",\n                \"version\": 52,\n                \"isUpdated\": false,\n                \"loadboardId\": \"relay\",\n                \"preferences\": {\n                    \"originCities\": [\n                        \"Los Angeles, CA\"\n                    ],\n                    \"destinationCities\": [],\n                    \"originRadius\": 150,\n                    \"destinationRadius\": 200,\n                    \"minDollarsPerMile\": 3.4,\n                    \"minTotalPayout\": 750,\n                    \"excludedCities\": [],\n                    \"startDateTime\": \"\",\n                    \"endDateTime\": \"\",\n                    \"equipment\": {\n                        \"powerOnly\": true,\n                        \"tractorTrailer\": true,\n                        \"powerTractorOptions\": [\n                            \"53' Trailer\",\n                            \"53' Container\",\n                            \"53' Reefer\",\n                            \"26' Reefer\",\n                            \"45' Container\",\n                            \"40' Container\",\n                            \"20' Container\",\n                            \"45' HC Container\",\n                            \"40' HC Container\",\n                            \"48' Reefer\",\n                            \"48' Trailer\",\n                            \"53' Trailer\",\n                            \"53' Container\",\n                            \"53' Reefer\",\n                            \"26' Reefer\",\n                            \"45' Container\",\n                            \"40' Container\",\n                            \"20' Container\",\n                            \"45' HC Container\",\n                            \"40' HC Container\",\n                            \"48' Reefer\",\n                            \"48' Trailer\"\n                        ],\n                        \"boxTruck\": false,\n                        \"boxTruckOptions\": []\n                    },\n                    \"workTypes\": [\n                        \"Block\"\n                    ],\n                    \"driverTypes\": [],\n                    \"loadTypes\": []\n                }\n            },\n            {\n                \"uniqueName\": \"Neb_Test\",\n                \"version\": 2,\n                \"isUpdated\": false,\n                \"loadboardId\": \"relay\",\n                \"preferences\": {\n                    \"originCities\": [],\n                    \"destinationCities\": [],\n                    \"originRadius\": 100,\n                    \"destinationRadius\": 100,\n                    \"minDollarsPerMile\": 0,\n                    \"minTotalPayout\": 0,\n                    \"excludedCities\": [],\n                    \"startDateTime\": \"\",\n                    \"endDateTime\": \"\",\n                    \"equipment\": {\n                        \"powerOnly\": true,\n                        \"tractorTrailer\": false,\n                        \"powerTractorOptions\": [\n                            \"53' Trailer\"\n                        ],\n                        \"boxTruck\": false,\n                        \"boxTruckOptions\": []\n                    },\n                    \"workTypes\": [],\n                    \"driverTypes\": [],\n                    \"loadTypes\": []\n                }\n            }\n        ]\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Load Ingestion",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\",\n    \"search_unique_name\": \"Neb_areeb-test\",\n    \"loads\": [\n        {\n            \"trip\": {\n                \"origin\": {\n                    \"city_state\": \"Chicago, IL\",\n                    \"postal_code\": \"60481\"\n                },\n                \"destination\": {\n                    \"city_state\": \"San Antonio, TX\",\n                    \"postal_code\": \"78218\"\n                },\n                \"total_miles\": 1170.8,\n                \"stops_count\": 2\n            },\n            \"equipment\": {\n                \"trailer_type\": \"53 Reefer\",\n                \"driver_mode\": \"Team\"\n            },\n            \"payout\": {\n                \"tour_id\": \"Tour_test_010\",\n                \"estimated_total_payout_usd\": 5855.80,\n                \"display_rate_usd_per_mile\": 5.15,\n                \"load_financials\": [\n                    {\n                        \"load_id\": \"Load_3b7d065e\"\n                    }\n                ]\n            },\n            \"stops\": [\n                {\n                    \"appointment\": {\n                        \"arrival\": \"02/17 19:10 CST\"\n                    }\n                },\n                {\n                    \"appointment\": {\n                        \"arrival\": \"02/18 20:21 CST\"\n                    }\n                }\n            ]\n        }\n    ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://dev-be.neblo.ai/api/extension/loads",
+          "protocol": "https",
+          "host": [
+            "dev-be",
+            "neblo",
+            "ai"
+          ],
+          "path": [
+            "api",
+            "extension",
+            "loads"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Load Ingestion",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\",\n    \"search_unique_name\": \"Neb_areeb-test\",\n    \"loads\": [\n        {\n            \"trip\": {\n                \"origin\": {\n                    \"city_state\": \"Chicago, IL\",\n                    \"postal_code\": \"60481\"\n                },\n                \"destination\": {\n                    \"city_state\": \"San Antonio, TX\",\n                    \"postal_code\": \"78218\"\n                },\n                \"total_miles\": 1170.8,\n                \"stops_count\": 2\n            },\n            \"equipment\": {\n                \"trailer_type\": \"53 Reefer\",\n                \"driver_mode\": \"Team\"\n            },\n            \"payout\": {\n                \"tour_id\": \"Tour_test_010\",\n                \"estimated_total_payout_usd\": 5855.80,\n                \"display_rate_usd_per_mile\": 5.15,\n                \"load_financials\": [\n                    {\n                        \"load_id\": \"Load_3b7d065e\"\n                    }\n                ]\n            },\n            \"stops\": [\n                {\n                    \"appointment\": {\n                        \"arrival\": \"02/17 19:10 CST\"\n                    }\n                },\n                {\n                    \"appointment\": {\n                        \"arrival\": \"02/18 20:21 CST\"\n                    }\n                }\n            ]\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://dev-be.neblo.ai/api/extension/loads",
+              "protocol": "https",
+              "host": [
+                "dev-be",
+                "neblo",
+                "ai"
+              ],
+              "path": [
+                "api",
+                "extension",
+                "loads"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Mar 2026 00:48:06 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "95"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "vary",
+              "value": "Accept, origin"
+            },
+            {
+              "key": "allow",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "referrer-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "cross-origin-opener-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "x-request-id",
+              "value": "d9dcf809-2db5-4342-9416-0fa0afd86e87"
+            },
+            {
+              "key": "x-processing-time-ms",
+              "value": "1308.34"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": null,\n    \"status_code\": 200,\n    \"data\": {\n        \"received\": 1,\n        \"tour_ids\": [\n            \"Tour_test_010\"\n        ],\n        \"failed\": []\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Loads to Book",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://dev-be.neblo.ai/api/extension/loads-to-book",
+          "protocol": "https",
+          "host": [
+            "dev-be",
+            "neblo",
+            "ai"
+          ],
+          "path": [
+            "api",
+            "extension",
+            "loads-to-book"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Loads to Book",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://dev-be.neblo.ai/api/extension/loads-to-book",
+              "protocol": "https",
+              "host": [
+                "dev-be",
+                "neblo",
+                "ai"
+              ],
+              "path": [
+                "api",
+                "extension",
+                "loads-to-book"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Mar 2026 00:48:39 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "67"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "vary",
+              "value": "Accept, origin"
+            },
+            {
+              "key": "allow",
+              "value": "OPTIONS, POST"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "referrer-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "cross-origin-opener-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "x-request-id",
+              "value": "4c736847-0081-4444-9e40-3417d3ef8664"
+            },
+            {
+              "key": "x-processing-time-ms",
+              "value": "7.39"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": null,\n    \"status_code\": 200,\n    \"data\": {\n        \"loads\": [\n            \"Tour_test_009\"\n        ]\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Load Status (Booked)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"load_id\": \"Tour_test_009\",\n    \"status\": \"Booked\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://dev-be.neblo.ai/api/extension/update-status",
+          "protocol": "https",
+          "host": [
+            "dev-be",
+            "neblo",
+            "ai"
+          ],
+          "path": [
+            "api",
+            "extension",
+            "update-status"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Update Load Status (Booked)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"load_id\": \"Tour_test_009\",\n    \"status\": \"Booked\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://dev-be.neblo.ai/api/extension/update-status",
+              "protocol": "https",
+              "host": [
+                "dev-be",
+                "neblo",
+                "ai"
+              ],
+              "path": [
+                "api",
+                "extension",
+                "update-status"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Mar 2026 00:48:53 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "56"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "vary",
+              "value": "Accept, origin"
+            },
+            {
+              "key": "allow",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "referrer-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "cross-origin-opener-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "x-request-id",
+              "value": "2bd6e127-f0de-4524-b699-9b1be92406c1"
+            },
+            {
+              "key": "x-processing-time-ms",
+              "value": "1315.96"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": null,\n    \"status_code\": 200,\n    \"data\": {\n        \"updated\": true\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Load Status (Expired)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"company_code\": \"CARRIER-001\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\",\n    \"load_id\": \"Tour_test_008\",\n    \"status\": \"Expired\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/extension/update-status",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "extension",
+            "update-status"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Update Load Status (Expired)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"apiKey\": \"0hN9DQWs5dvt96re-_iZml7zdoSct1PBxMjb04o215s\",\n    \"company_code\": \"DITR-MC1062178\",\n    \"adapter_code\": \"AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7\",\n    \"load_id\": \"Tour_test_010\",\n    \"status\": \"Expired\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://dev-be.neblo.ai/api/extension/update-status",
+              "protocol": "https",
+              "host": [
+                "dev-be",
+                "neblo",
+                "ai"
+              ],
+              "path": [
+                "api",
+                "extension",
+                "update-status"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Mon, 09 Mar 2026 00:51:19 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "56"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "vary",
+              "value": "Accept, origin"
+            },
+            {
+              "key": "allow",
+              "value": "OPTIONS, POST"
+            },
+            {
+              "key": "x-frame-options",
+              "value": "DENY"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "referrer-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "cross-origin-opener-policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "x-request-id",
+              "value": "d026ea5c-caf9-4b9f-aca4-dd5fef0af06c"
+            },
+            {
+              "key": "x-processing-time-ms",
+              "value": "1291.67"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"error\": null,\n    \"status_code\": 200,\n    \"data\": {\n        \"updated\": true\n    }\n}"
+        }
+      ]
+    }
+  ]
+}

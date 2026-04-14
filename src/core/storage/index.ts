@@ -4,7 +4,8 @@
  */
 
 import type { ExtensionSettings, EquipmentSettings } from "~/types"
-import type { SavedSearch, AuthState } from "~/core/types"
+import type { SavedSearch, AuthState, ApiConfigSettings } from "~/core/types"
+import { DEFAULT_API_CONFIG } from "~/core/types"
 import { DEFAULT_SETTINGS, DEFAULT_EQUIPMENT } from "~/types"
 
 // ============================================
@@ -87,4 +88,30 @@ export async function getAuthState(): Promise<AuthState> {
 
 export async function saveAuthState(auth: AuthState): Promise<void> {
   await chrome.storage.local.set({ authState: auth })
+}
+
+// ============================================
+// Scrape Override (from Options page)
+// ============================================
+
+export async function getScrapeOverride(): Promise<boolean> {
+  const result = await chrome.storage.local.get("scrapeOverride")
+  return result.scrapeOverride ?? false
+}
+
+export async function saveScrapeOverride(enabled: boolean): Promise<void> {
+  await chrome.storage.local.set({ scrapeOverride: enabled })
+}
+
+// ============================================
+// API Config (from Options page)
+// ============================================
+
+export async function getApiConfig(): Promise<ApiConfigSettings> {
+  const result = await chrome.storage.sync.get("apiConfig")
+  return result.apiConfig ? { ...DEFAULT_API_CONFIG, ...result.apiConfig } : DEFAULT_API_CONFIG
+}
+
+export async function saveApiConfig(config: ApiConfigSettings): Promise<void> {
+  await chrome.storage.sync.set({ apiConfig: config })
 }

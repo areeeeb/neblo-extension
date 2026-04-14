@@ -10,6 +10,8 @@ import {
     DRIVER_TYPE_OPTIONS,
     LOAD_TYPE_OPTIONS,
 } from "./types"
+import type { ApiConfigSettings } from "~/core/types"
+import { DEFAULT_API_CONFIG } from "~/core/types"
 import { mergeSettings } from "~/core/storage"
 import "~/style.css"
 
@@ -285,7 +287,6 @@ function EquipmentSection({ equipment, onChange }: EquipmentSectionProps) {
 // ─── API Test Section ───────────────────────────────────────────
 
 function ApiTestSection() {
-    const [companyName, setCompanyName] = useState("acme-logistics")
     const [result, setResult] = useState<{ endpoint: string; data: unknown } | null>(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -295,11 +296,7 @@ function ApiTestSection() {
         setError(null)
         setResult(null)
         try {
-            const message: Record<string, unknown> = { type, ...extra }
-            if (type !== "API_GET_SEARCHES") {
-                message.companyName = companyName
-            }
-            const response = await chrome.runtime.sendMessage(message)
+            const response = await chrome.runtime.sendMessage({ type, ...extra })
             setResult({ endpoint: label, data: response })
         } catch (err) {
             setError(err instanceof Error ? err.message : String(err))
@@ -311,33 +308,22 @@ function ApiTestSection() {
     const testSendLoads = () => {
         const sampleLoad = {
             trip: {
-                type: "one-way", deadhead_miles: 32.95, stops_count: 2, total_miles: 1170.8,
-                estimated_trip_duration: "1d 1h",
-                origin: { stop_number: 1, site_code: "HMW1", city_state: "Wilmington, IL", postal_code: "60481", scheduled_time: "Tue Feb 17 19:10 CST" },
-                destination: { stop_number: 2, site_code: "UTX8", city_state: "San Antonio, TX", postal_code: "78218", scheduled_time: "Wed Feb 18 21:01 CST" },
-                requirements: {
-                    trailer: { type: "53' Reefer", provided_or_required: "required", bring_your_own_trailer: true },
-                    team_load: true, requirements_title: "53' Reefer Trip Requirements",
-                    reefer_settings: { pre_cool_to_f: 33, mode: "continuous", start_stop_acceptable_for_frozen_below_f: 1 },
-                    other_requirements: ["Trailer must be food grade"]
-                }
+                origin: { city_state: "Chicago, IL", postal_code: "60481" },
+                destination: { city_state: "San Antonio, TX", postal_code: "78218" },
+                total_miles: 1170.8,
+                stops_count: 2
             },
-            equipment: { trailer_type: "53' Reefer", provided: false, required: true, driver_mode: "Team" },
+            equipment: { trailer_type: "53 Reefer", driver_mode: "Team" },
             payout: {
-                estimated_total_payout_usd: 4855.8, display_rate_usd_per_mile: 4.15, base_rate_usd_per_mile: 3.71, tour_id: "Tour...da1fe5f0",
-                load_financials: [{ load_id: "Load...3b7d065e", base_rate_usd: 4343.45, fuel_surcharge_usd: 468.32, toll_charge_usd: 44.03, total_usd: 4855.8 }]
+                tour_id: "Tour_test_010",
+                estimated_total_payout_usd: 5855.80,
+                display_rate_usd_per_mile: 5.15,
+                load_financials: [{ load_id: "Load_3b7d065e" }]
             },
             stops: [
-                { stop_number: 1, site_code: "HMW1", address_line_1: "30260 S Graaskamp Blvd, Wilmington, IL 60481", address_line_2: null, city_state: "Wilmington, IL",
-                  equipment: { trailer_type: "53' Reefer", status: "Live", temperature_readings: [{ value_f: 33, detail: "Unknown" }] },
-                  appointment: { arrival: "02/17 19:10 CST", departure: "02/17 20:40" }, instructions_sections_present: ["Pick-up instructions"] },
-                { stop_number: 2, site_code: "UTX8", address_line_1: "4825 Eisenhauer Rd Bldg 7", address_line_2: null, city_state: "San Antonio, TX",
-                  equipment: { trailer_type: "53' Reefer", status: "Live", temperature_readings: [{ value_f: 33, detail: "Unknown" }] },
-                  appointment: { arrival: "02/18 20:21 CST", departure: "02/18 21:01" }, instructions_sections_present: ["Drop-off instructions"] }
-            ],
-            legs: [{ from_stop_number: 1, from_site_code: "HMW1", to_stop_number: 2, to_site_code: "UTX8", distance_miles: 1170.8, estimated_drive_time: "1d 1h" }],
-            ui_actions_present: { book_button_present: true, confirm_booking_modal_present: true, confirm_buttons: ["No", "Yes, confirm booking"] },
-            raw_strings_detected: { header_rate_per_mile: "$4.15/mi", deadhead: "32.95 mi deadhead", details_distance: "1,170.8 mi", details_duration: "1d 1h" }
+                { appointment: { arrival: "02/17 19:10 CST" } },
+                { appointment: { arrival: "02/18 20:21 CST" } }
+            ]
         }
         testEndpoint("API_SEND_LOADS", "Send Loads", { searchUniqueName: "Chicago to Dallas", loads: [sampleLoad] })
     }
@@ -345,17 +331,17 @@ function ApiTestSection() {
     return (
         <div className="mb-6 space-y-4 p-4 border border-amber-300 rounded-md bg-amber-50">
             <h3 className="text-sm font-bold text-amber-800">API Endpoint Tester</h3>
-            <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Company Name</label>
-                <input
-                    type="text"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
-                    placeholder="e.g. acme-logistics"
-                />
-            </div>
+            <p className="text-xs text-amber-700">
+                Uses the API config above. Save settings first, then test.
+            </p>
             <div className="flex gap-2 flex-wrap">
+                <button
+                    onClick={() => testEndpoint("API_GET_ADAPTER", "Get Adapter", { adapterType: "PRIVATE_AMAZON_RELAY_PORTAL" })}
+                    disabled={loading}
+                    className="px-3 py-1.5 bg-amber-600 text-white text-sm rounded-md hover:bg-amber-700 font-medium disabled:bg-gray-400"
+                >
+                    Get Adapter
+                </button>
                 <button
                     onClick={() => testEndpoint("API_GET_CREDENTIALS", "Get Credentials")}
                     disabled={loading}
@@ -382,7 +368,21 @@ function ApiTestSection() {
                     disabled={loading}
                     className="px-3 py-1.5 bg-amber-600 text-white text-sm rounded-md hover:bg-amber-700 font-medium disabled:bg-gray-400"
                 >
-                    Send Loads (sample)
+                    Send Loads
+                </button>
+                <button
+                    onClick={() => testEndpoint("API_GET_LOADS_TO_BOOK", "Loads to Book")}
+                    disabled={loading}
+                    className="px-3 py-1.5 bg-amber-600 text-white text-sm rounded-md hover:bg-amber-700 font-medium disabled:bg-gray-400"
+                >
+                    Loads to Book
+                </button>
+                <button
+                    onClick={() => testEndpoint("API_UPDATE_LOAD_STATUS", "Update Status", { loadId: "Tour_test_010", status: "Booked" })}
+                    disabled={loading}
+                    className="px-3 py-1.5 bg-amber-600 text-white text-sm rounded-md hover:bg-amber-700 font-medium disabled:bg-gray-400"
+                >
+                    Update Status
                 </button>
             </div>
             {loading && <p className="text-xs text-amber-700">Loading...</p>}
@@ -407,16 +407,24 @@ function ApiTestSection() {
 
 export default function OptionsPage() {
     const [settings, setSettings] = useState<ExtensionSettings>(DEFAULT_SETTINGS)
+    const [apiConfig, setApiConfig] = useState<ApiConfigSettings>(DEFAULT_API_CONFIG)
+    const [scrapeOverride, setScrapeOverride] = useState(false)
     const [isSaved, setIsSaved] = useState(false)
 
     useEffect(() => {
-        chrome.storage.sync.get("settings", (result) => {
+        chrome.storage.sync.get(["settings", "apiConfig"], (result) => {
             setSettings(mergeSettings(result.settings))
+            if (result.apiConfig) {
+                setApiConfig({ ...DEFAULT_API_CONFIG, ...result.apiConfig })
+            }
+        })
+        chrome.storage.local.get("scrapeOverride", (result) => {
+            setScrapeOverride(result.scrapeOverride ?? false)
         })
     }, [])
 
     const handleSave = () => {
-        chrome.storage.sync.set({ settings }, () => {
+        chrome.storage.sync.set({ settings, apiConfig }, () => {
             setIsSaved(true)
             setTimeout(() => setIsSaved(false), 2000)
         })
@@ -429,215 +437,84 @@ export default function OptionsPage() {
                     Neblo Load Automation - Settings
                 </h1>
 
-                {/* Rate Filters */}
-                <div className="mb-6 grid grid-cols-2 gap-4">
+                {/* Scrape Override */}
+                <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50 flex items-center justify-between">
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">
-                            Minimum Dollars Per Mile
-                        </label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={settings.minDollarsPerMile || ""}
-                            onChange={(e) =>
-                                setSettings({
-                                    ...settings,
-                                    minDollarsPerMile: parseFloat(e.target.value) || 0
-                                })
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="e.g. 3.00"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Min rate per mile</p>
+                        <h3 className="text-sm font-bold text-gray-700">Force Scraping Override</h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                            When enabled, scraping runs even if the API says "stop".
+                            Scraping always runs when the API says "start", regardless of this setting.
+                        </p>
                     </div>
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">
-                            Minimum Total Payout
-                        </label>
-                        <input
-                            type="number"
-                            step="1"
-                            min="0"
-                            value={settings.minTotalPayout || ""}
-                            onChange={(e) =>
-                                setSettings({
-                                    ...settings,
-                                    minTotalPayout: parseFloat(e.target.value) || 0
-                                })
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="e.g. 500"
+                    <button
+                        onClick={() => {
+                            const next = !scrapeOverride
+                            setScrapeOverride(next)
+                            chrome.storage.local.set({ scrapeOverride: next })
+                        }}
+                        className={`
+                            relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent
+                            transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                            ${scrapeOverride ? "bg-green-500" : "bg-gray-300"}
+                        `}
+                        role="switch"
+                        aria-checked={scrapeOverride}
+                    >
+                        <span
+                            className={`
+                                pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0
+                                transition duration-200 ease-in-out
+                                ${scrapeOverride ? "translate-x-5" : "translate-x-0"}
+                            `}
                         />
-                        <p className="text-xs text-gray-500 mt-1">Min total payout ($)</p>
-                    </div>
+                    </button>
                 </div>
-
-                {/* Date/Time Filters */}
-                <div className="mb-6 grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">
-                            Start Date/Time
-                        </label>
-                        <input
-                            type="datetime-local"
-                            value={settings.startDateTime}
-                            onChange={(e) =>
-                                setSettings({ ...settings, startDateTime: e.target.value })
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Earliest pickup window</p>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">
-                            End Date/Time
-                        </label>
-                        <input
-                            type="datetime-local"
-                            value={settings.endDateTime}
-                            onChange={(e) =>
-                                setSettings({ ...settings, endDateTime: e.target.value })
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Latest pickup window</p>
-                    </div>
-                </div>
-
-                {/* Radius Settings */}
-                <div className="mb-6 grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">
-                            Origin Radius (miles)
-                        </label>
-                        <select
-                            value={settings.originRadius}
-                            onChange={(e) =>
-                                setSettings({ ...settings, originRadius: parseInt(e.target.value) })
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            {RADIUS_OPTIONS.map((radius) => (
-                                <option key={radius} value={radius}>{radius} miles</option>
-                            ))}
-                        </select>
-                        <p className="text-xs text-gray-500 mt-1">Search radius around origin cities</p>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">
-                            Destination Radius (miles)
-                        </label>
-                        <select
-                            value={settings.destinationRadius}
-                            onChange={(e) =>
-                                setSettings({ ...settings, destinationRadius: parseInt(e.target.value) })
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            {RADIUS_OPTIONS.map((radius) => (
-                                <option key={radius} value={radius}>{radius} miles</option>
-                            ))}
-                        </select>
-                        <p className="text-xs text-gray-500 mt-1">Search radius around destination cities</p>
-                    </div>
-                </div>
-
-                {/* Origin Cities */}
-                <CityPicker
-                    label="Origin Cities"
-                    cities={settings.originCities}
-                    maxCities={5}
-                    onChange={(originCities) => setSettings({ ...settings, originCities })}
-                    emptyMessage="No origin cities added yet. (max 5)"
-                    keyPrefix="origin"
-                />
-
-                {/* Destination Cities */}
-                <CityPicker
-                    label="Destination Cities"
-                    cities={settings.destinationCities}
-                    maxCities={3}
-                    onChange={(destinationCities) => setSettings({ ...settings, destinationCities })}
-                    emptyMessage="No destination cities added yet. Leave empty for any destination. (max 3)"
-                    keyPrefix="dest"
-                />
-
-                {/* Excluded Cities */}
-                <CityPicker
-                    label="Excluded Cities"
-                    cities={settings.excludedCities}
-                    maxCities={10}
-                    onChange={(excludedCities) => setSettings({ ...settings, excludedCities })}
-                    emptyMessage="No excluded cities. (max 10)"
-                    keyPrefix="excluded"
-                />
-
-                {/* Equipment Types */}
-                <EquipmentSection
-                    equipment={settings.equipment}
-                    onChange={(equipment) => setSettings({ ...settings, equipment })}
-                />
-
-                {/* Work Types */}
-                <CheckboxGroup
-                    label="Work Types"
-                    options={WORK_TYPE_OPTIONS}
-                    selected={settings.workTypes}
-                    onChange={(workTypes) => setSettings({ ...settings, workTypes })}
-                />
-
-                {/* Driver Types */}
-                <CheckboxGroup
-                    label="Driver Types"
-                    options={DRIVER_TYPE_OPTIONS}
-                    selected={settings.driverTypes}
-                    onChange={(driverTypes) => setSettings({ ...settings, driverTypes })}
-                />
-
-                {/* Load Types */}
-                <CheckboxGroup
-                    label="Load Types"
-                    options={LOAD_TYPE_OPTIONS}
-                    selected={settings.loadTypes}
-                    onChange={(loadTypes) => setSettings({ ...settings, loadTypes })}
-                />
 
                 {/* API Configuration */}
                 <div className="mb-6 space-y-4 p-4 border border-gray-200 rounded-md bg-gray-50">
                     <h3 className="text-sm font-bold text-gray-700">API Configuration</h3>
                     <div>
-                        <label className="block text-xs font-bold text-gray-700 mb-1">API Endpoint</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1">Base URL</label>
                         <input
                             type="text"
-                            value={settings.apiEndpoint}
-                            onChange={(e) => setSettings({ ...settings, apiEndpoint: e.target.value })}
+                            value={apiConfig.baseUrl}
+                            onChange={(e) => setApiConfig({ ...apiConfig, baseUrl: e.target.value })}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                            placeholder="http://localhost:3001/api/loads"
+                            placeholder="https://dev-be.neblo.ai/api/extension"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-gray-700 mb-1">Group Name</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1">API Key</label>
                         <input
-                            type="text"
-                            value={settings.groupName}
-                            onChange={(e) => setSettings({ ...settings, groupName: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                            placeholder="NEBLO EXTENSION BOT"
+                            type="password"
+                            value={apiConfig.apiKey}
+                            onChange={(e) => setApiConfig({ ...apiConfig, apiKey: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-mono"
+                            placeholder="Your API key"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-gray-700 mb-1">Group ID</label>
+                        <label className="block text-xs font-bold text-gray-700 mb-1">Company Code</label>
                         <input
                             type="text"
-                            value={settings.groupId}
-                            onChange={(e) => setSettings({ ...settings, groupId: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                            placeholder="@-neblo-ext"
+                            value={apiConfig.companyCode}
+                            onChange={(e) => setApiConfig({ ...apiConfig, companyCode: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-mono"
+                            placeholder="e.g. DITR-MC1062178"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-gray-700 mb-1">Adapter Code</label>
+                        <input
+                            type="text"
+                            value={apiConfig.adapterCode}
+                            onChange={(e) => setApiConfig({ ...apiConfig, adapterCode: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-mono"
+                            placeholder="e.g. AMAZONRELAY_PRIVATE_AMAZON_RELAY_PORTAL_B3D7"
                         />
                     </div>
                     <p className="text-xs text-gray-500">
-                        These values will be used when creating loads in the API
+                        These values authenticate all API calls. When all fields are set, the extension uses the real API instead of mock data.
                     </p>
                 </div>
 
@@ -663,15 +540,10 @@ export default function OptionsPage() {
                 <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
                     <h3 className="text-sm font-bold text-blue-800 mb-2">How to use:</h3>
                     <ol className="text-sm text-blue-700 space-y-1 list-decimal list-inside">
-                        <li>Set your minimum rate per mile and total payout filters</li>
-                        <li>Configure date/time range for pickup windows</li>
-                        <li>Set search radius for origin and destination areas</li>
-                        <li>Add origin cities to monitor</li>
-                        <li>Add destination cities (optional - leave empty for any)</li>
-                        <li>Add excluded cities to skip specific destinations</li>
-                        <li>Select equipment types, work types, driver types, and load types</li>
-                        <li>Configure the API endpoint</li>
-                        <li>Click Save Settings, then use extension icon to start</li>
+                        <li>Enter your API Key, Company Code, and Adapter Code</li>
+                        <li>Click Save Settings</li>
+                        <li>Use the API Endpoint Tester to verify connectivity</li>
+                        <li>Searches are synced automatically from the API</li>
                     </ol>
                 </div>
             </div>

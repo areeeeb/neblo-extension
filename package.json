@@ -29,7 +29,8 @@
     "host_permissions": [
       "http://localhost/*",
       "https://localhost/*",
-      "https://relay.amazon.com/*"
+      "https://relay.amazon.com/*",
+      "https://www.amazon.com/*"
     ],
     "permissions": [
       "storage",

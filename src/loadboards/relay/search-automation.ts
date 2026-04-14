@@ -23,9 +23,25 @@ import {
 } from "~/core/automation/dom-utils"
 import { RELAY_SELECTORS, RELAY_LABELS } from "./selectors"
 
-/** Delay between major automation steps (2–8 seconds, mimics human pace). */
+// ============================================
+// Timing Profile — flip to "prod" for human-like delays
+// ============================================
+
+const TIMING_MODE: "fast" | "prod" = "fast"
+
+const TIMING = {
+  fast: { stepMin: 300, stepMax: 600, shortMin: 100, shortMax: 300 },
+  prod: { stepMin: 2000, stepMax: 8000, shortMin: 500, shortMax: 1000 },
+}[TIMING_MODE]
+
+/** Delay between major automation steps. */
 function stepDelay(): Promise<void> {
-  return randomDelay(2000, 8000)
+  return randomDelay(TIMING.stepMin, TIMING.stepMax)
+}
+
+/** Short delay (e.g. waiting for dropdown, typing pause). */
+function shortDelay(): Promise<void> {
+  return randomDelay(TIMING.shortMin, TIMING.shortMax)
 }
 
 /** Parse a datetime-local value (YYYY-MM-DDTHH:MM) into date (MM/DD/YYYY) and time (HH:MM). */
@@ -65,7 +81,7 @@ async function tryLoadSavedSearch(
 
   await humanClick(savedSearchesBtn as HTMLElement, "Saved searches button")
   // Give the panel time to open and populate
-  await randomDelay(800, 1400)
+  await shortDelay()
   if (!shouldContinue()) return false
 
   // Scan the saved-search list boxes for a match
@@ -82,13 +98,13 @@ async function tryLoadSavedSearch(
   if (!matchedBox) {
     console.log(`[Neblo Relay] No saved search found for "${uniqueName}" — will run New Search`)
     await pressEscape()
-    await randomDelay(400, 700)
+    await shortDelay()
     return false
   }
 
   logStep("S2", `Found saved search "${uniqueName}", clicking...`)
   await humanClick(matchedBox, `Saved search: ${uniqueName}`)
-  await randomDelay(1000, 2000)
+  await shortDelay()
   if (!shouldContinue()) return false
 
   logStep("S3", 'Clicking "Apply" button...')
@@ -130,7 +146,7 @@ async function saveSearch(
   }
 
   await humanClick(saveThisSearchBtn as HTMLElement, "Save this search button")
-  await randomDelay(600, 1200)
+  await shortDelay()
   if (!shouldContinue()) return
 
   logStep("Save-2", `Typing search name "${uniqueName}"...`)
@@ -145,7 +161,7 @@ async function saveSearch(
   }
 
   await humanType(nameInput, uniqueName, { description: "Search name", shouldContinue })
-  await randomDelay(400, 800)
+  await shortDelay()
   if (!shouldContinue()) return
 
   logStep("Save-3", 'Clicking "Save" button...')
@@ -190,7 +206,15 @@ export async function runRelaySearch(
   // skip the entire parameter-filling flow.
   // ------------------------------------------------------------------
   const loadedFromSaved = await tryLoadSavedSearch(search.uniqueName, shouldContinue)
-  if (loadedFromSaved) return true
+  if (loadedFromSaved) {
+    if (search.isUpdated) {
+      console.warn(
+        `[Neblo Relay] Search "${search.uniqueName}" loaded from saved but has UPDATES ` +
+        `(v${search.version}) — preferences may be stale. Update handling not yet implemented.`
+      )
+    }
+    return true
+  }
   if (!shouldContinue()) return false
 
   // ------------------------------------------------------------------
@@ -202,14 +226,38 @@ export async function runRelaySearch(
   // ----------------------------------------
   logStep(1, 'Looking for "New Search" button...')
 
-  const newSearchSpan = await waitForElement(
+  let newSearchSpan = await waitForElement(
     () => getElementByText("span", RELAY_LABELS.newSearch),
     { timeout: 15000, shouldContinue }
   )
 
   if (!newSearchSpan) {
-    console.error('[Neblo Relay] FATAL: Could not find "New Search" button')
-    return false
+    // "New Search" not visible — likely too many open tabs.
+    // Close them by clicking all buttons inside the first tab-panel.
+    logStep(1, '"New Search" not found — closing existing search tabs...')
+    const tabPanel = document.getElementsByClassName("tab-panel")[0]
+    if (tabPanel) {
+      const tabButtons = tabPanel.getElementsByTagName("button")
+      for (const btn of Array.from(tabButtons)) {
+        if (!shouldContinue()) return false
+        await humanClick(btn, "Close tab button")
+        await shortDelay()
+      }
+    }
+
+    await stepDelay()
+    if (!shouldContinue()) return false
+
+    // Retry finding "New Search" after closing tabs
+    newSearchSpan = await waitForElement(
+      () => getElementByText("span", RELAY_LABELS.newSearch),
+      { timeout: 10000, shouldContinue }
+    )
+
+    if (!newSearchSpan) {
+      console.error('[Neblo Relay] FATAL: Could not find "New Search" button even after closing tabs')
+      return false
+    }
   }
 
   await humanClick(newSearchSpan as HTMLElement, "New Search button")
@@ -255,7 +303,7 @@ export async function runRelaySearch(
     }
 
     await humanType(currentInput, city, { description: `Origin city ${i + 1}`, shouldContinue })
-    await randomDelay(500, 1000)
+    await shortDelay()
     if (!shouldContinue()) return false
 
     logStep(4, `Selecting "${city}" from dropdown...`)
@@ -334,8 +382,10 @@ export async function runRelaySearch(
   // Step 8: Select equipment sub-options
   // ----------------------------------------
   const allSubOptions = [
-    ...prefs.equipment.powerTractorOptions,
-    ...prefs.equipment.boxTruckOptions,
+    ...new Set([
+      ...prefs.equipment.powerTractorOptions,
+      ...prefs.equipment.boxTruckOptions,
+    ])
   ].filter((o) => o.toLowerCase() !== "all")
 
   for (const option of allSubOptions) {
@@ -356,7 +406,7 @@ export async function runRelaySearch(
   }
 
   await pressEscape()
-  await randomDelay(300, 500)
+  await shortDelay()
   if (!shouldContinue()) return false
 
   // ----------------------------------------
@@ -462,7 +512,7 @@ export async function runRelaySearch(
       if (cityOptionRetry) {
         await humanClick(cityOptionRetry as HTMLElement, "City filter option (retry)")
       }
-      await randomDelay(1000, 2000)
+      await shortDelay()
     }
   }
 
@@ -497,7 +547,7 @@ export async function runRelaySearch(
         description: `Destination city ${i + 1}`,
         shouldContinue
       })
-      await randomDelay(500, 1000)
+      await shortDelay()
       if (!shouldContinue()) return false
 
       logStep(15, `Selecting "${city}" from dropdown...`)
@@ -532,7 +582,7 @@ export async function runRelaySearch(
   const startDateFilter = document.getElementById(RELAY_SELECTORS.startDateFilter)
   if (startDateFilter) {
     await humanClick(startDateFilter, "Start date filter (focus out)")
-    await randomDelay(500, 1000)
+    await shortDelay()
     await pressEscape()
     await stepDelay()
   }
@@ -586,7 +636,7 @@ export async function runRelaySearch(
 
     if (minPricePerMileInput) {
       await humanClick(minPricePerMileInput as HTMLElement, "Min price per mile input")
-      await randomDelay(300, 600)
+      await shortDelay()
       await humanType(minPricePerMileInput, prefs.minDollarsPerMile.toString(), {
         description: "Min price per mile",
         shouldContinue
@@ -597,7 +647,7 @@ export async function runRelaySearch(
       const focusOut = document.getElementById(RELAY_SELECTORS.startDateFilter)
       if (focusOut) {
         await humanClick(focusOut, "Start date filter (focus out)")
-        await randomDelay(500, 1000)
+        await shortDelay()
         await pressEscape()
         await stepDelay()
       }
@@ -622,7 +672,7 @@ export async function runRelaySearch(
 
     if (minPayoutInput) {
       await humanClick(minPayoutInput as HTMLElement, "Min total payout input")
-      await randomDelay(300, 600)
+      await shortDelay()
       await humanType(minPayoutInput, prefs.minTotalPayout.toString(), {
         description: "Min total payout",
         shouldContinue
@@ -633,7 +683,7 @@ export async function runRelaySearch(
       const focusOut = document.getElementById(RELAY_SELECTORS.startDateFilter)
       if (focusOut) {
         await humanClick(focusOut, "Start date filter (focus out)")
-        await randomDelay(500, 1000)
+        await shortDelay()
         await pressEscape()
         await stepDelay()
       }
@@ -679,7 +729,7 @@ export async function runRelaySearch(
           description: `Excluded city ${i + 1}`,
           shouldContinue
         })
-        await randomDelay(500, 1000)
+        await shortDelay()
         if (!shouldContinue()) return false
 
         logStep(24, `Selecting "${city}" from dropdown...`)
@@ -718,7 +768,7 @@ export async function runRelaySearch(
     const startDateEl = document.getElementById(RELAY_SELECTORS.startDateFilter)
     if (startDateEl) {
       await humanClick(startDateEl as HTMLElement, "Start date input")
-      await randomDelay(300, 600)
+      await shortDelay()
       await humanType(startDateEl as HTMLInputElement, startParts.date, {
         description: "Start date",
         shouldContinue
@@ -734,7 +784,7 @@ export async function runRelaySearch(
     const startTimeEl = document.getElementById(RELAY_SELECTORS.startTimeFilter)
     if (startTimeEl) {
       await humanClick(startTimeEl as HTMLElement, "Start time input")
-      await randomDelay(300, 600)
+      await shortDelay()
       await humanType(startTimeEl as HTMLInputElement, startParts.time, {
         description: "Start time",
         shouldContinue
@@ -754,7 +804,7 @@ export async function runRelaySearch(
     const endDateEl = document.getElementById(RELAY_SELECTORS.endDateFilter)
     if (endDateEl) {
       await humanClick(endDateEl as HTMLElement, "End date input")
-      await randomDelay(300, 600)
+      await shortDelay()
       await humanType(endDateEl as HTMLInputElement, endParts.date, {
         description: "End date",
         shouldContinue
@@ -770,7 +820,7 @@ export async function runRelaySearch(
     const endTimeEl = document.getElementById(RELAY_SELECTORS.endTimeFilter)
     if (endTimeEl) {
       await humanClick(endTimeEl as HTMLElement, "End time input")
-      await randomDelay(300, 600)
+      await shortDelay()
       await humanType(endTimeEl as HTMLInputElement, endParts.time, {
         description: "End time",
         shouldContinue

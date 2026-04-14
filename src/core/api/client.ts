@@ -1,91 +1,62 @@
 /**
- * API client with strategy pattern — mock/real switchable.
+ * API client with strategy pattern.
  * Runs in background.ts (no CORS issues for real API calls).
+ *
+ * Auth: every POST body includes { apiKey, company_code, adapter_code }.
+ * Response envelope: { error, status_code, data } — unwrapped into ApiResponse.
+ *
+ * When API config is not set, all methods return a "not configured" error.
  */
 
 import type {
   ApiConfig,
   ApiResponse,
+  ApiEnvelope,
+  AuthContext,
   CredentialsResponse,
   TwoFACodeResponse,
   SavedSearchesResponse,
-  ScrapedLoad,
-  SendLoadsResponse
+  LoadPayload,
+  SendLoadsResponse,
+  GetAdapterResponse,
+  LoadsToBookResponse,
+  LoadStatus,
+  UpdateLoadStatusResponse
 } from "./types"
-import {
-  MOCK_CREDENTIALS,
-  MOCK_2FA_CODES,
-  MOCK_SAVED_SEARCHES
-} from "./mock-data"
-
-// ============================================
-// Auth Context
-// ============================================
-
-interface AuthContext {
-  token: string
-  companyCode: string
-}
 
 // ============================================
 // Strategy Interface
 // ============================================
 
 interface ApiStrategy {
-  getCredentials(companyName: string): Promise<ApiResponse<CredentialsResponse>>
-  get2FACode(companyName: string): Promise<ApiResponse<TwoFACodeResponse>>
+  getAdapter(adapterType: string): Promise<ApiResponse<GetAdapterResponse>>
+  getCredentials(): Promise<ApiResponse<CredentialsResponse>>
+  get2FACode(): Promise<ApiResponse<TwoFACodeResponse>>
   getSearches(): Promise<ApiResponse<SavedSearchesResponse>>
-  sendLoads(companyName: string, searchUniqueName: string, loads: ScrapedLoad[]): Promise<ApiResponse<SendLoadsResponse>>
+  sendLoads(searchUniqueName: string, loads: LoadPayload[]): Promise<ApiResponse<SendLoadsResponse>>
+  getLoadsToBook(): Promise<ApiResponse<LoadsToBookResponse>>
+  updateLoadStatus(loadId: string, status: LoadStatus): Promise<ApiResponse<UpdateLoadStatusResponse>>
 }
 
 // ============================================
-// Mock Strategy
+// Unconfigured Strategy (returns errors)
 // ============================================
 
-class MockApiStrategy implements ApiStrategy {
-  constructor(private latency: number) {}
+const NOT_CONFIGURED_ERROR =
+  "API not configured — set API Key, Company Code, and Adapter Code in extension options"
 
-  private async simulateLatency(): Promise<void> {
-    if (this.latency > 0) {
-      await new Promise((resolve) => setTimeout(resolve, this.latency))
-    }
+class UnconfiguredStrategy implements ApiStrategy {
+  private fail<T>(): Promise<ApiResponse<T>> {
+    return Promise.resolve({ success: false, error: NOT_CONFIGURED_ERROR })
   }
 
-  private lookup<T>(store: Record<string, T>, key: string): T {
-    return store[key] ?? store["default"]
-  }
-
-  async getCredentials(
-    companyName: string
-  ): Promise<ApiResponse<CredentialsResponse>> {
-    console.log("[MockAPI] getCredentials:", companyName)
-    await this.simulateLatency()
-    return { success: true, data: this.lookup(MOCK_CREDENTIALS, companyName) }
-  }
-
-  async get2FACode(
-    companyName: string
-  ): Promise<ApiResponse<TwoFACodeResponse>> {
-    console.log("[MockAPI] get2FACode:", companyName)
-    await this.simulateLatency()
-    return { success: true, data: this.lookup(MOCK_2FA_CODES, companyName) }
-  }
-
-  async getSearches(): Promise<ApiResponse<SavedSearchesResponse>> {
-    console.log("[MockAPI] getSearches")
-    await this.simulateLatency()
-    return { success: true, data: MOCK_SAVED_SEARCHES }
-  }
-
-  async sendLoads(
-    companyName: string,
-    searchUniqueName: string,
-    loads: ScrapedLoad[]
-  ): Promise<ApiResponse<SendLoadsResponse>> {
-    console.log("[MockAPI] sendLoads:", { companyName, searchUniqueName, count: loads.length })
-    await this.simulateLatency()
-    return { success: true, data: { received: loads.length } }
-  }
+  getAdapter() { return this.fail<GetAdapterResponse>() }
+  getCredentials() { return this.fail<CredentialsResponse>() }
+  get2FACode() { return this.fail<TwoFACodeResponse>() }
+  getSearches() { return this.fail<SavedSearchesResponse>() }
+  sendLoads() { return this.fail<SendLoadsResponse>() }
+  getLoadsToBook() { return this.fail<LoadsToBookResponse>() }
+  updateLoadStatus() { return this.fail<UpdateLoadStatusResponse>() }
 }
 
 // ============================================
@@ -98,29 +69,36 @@ class RealApiStrategy implements ApiStrategy {
     private auth: AuthContext
   ) {}
 
+  /**
+   * Common POST helper. Includes auth fields in the body and
+   * unwraps the backend's { error, status_code, data } envelope.
+   */
   private async post<T>(
     endpoint: string,
-    body: Record<string, unknown>
+    body: Record<string, unknown> = {}
   ): Promise<ApiResponse<T>> {
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.auth.token}`
-        },
-        body: JSON.stringify({ company_code: this.auth.companyCode, ...body })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          apiKey: this.auth.apiKey,
+          company_code: this.auth.companyCode,
+          adapter_code: this.auth.adapterCode,
+          ...body
+        })
       })
 
-      if (!response.ok) {
+      const envelope = (await response.json()) as ApiEnvelope<T>
+
+      if (envelope.error || !response.ok) {
         return {
           success: false,
-          error: `${response.status} ${response.statusText}`
+          error: envelope.error ?? `${response.status} ${response.statusText}`
         }
       }
 
-      const data = (await response.json()) as T
-      return { success: true, data }
+      return { success: true, data: envelope.data ?? undefined }
     } catch (error) {
       return {
         success: false,
@@ -129,35 +107,72 @@ class RealApiStrategy implements ApiStrategy {
     }
   }
 
-  async getCredentials(
-    companyName: string
-  ): Promise<ApiResponse<CredentialsResponse>> {
-    return this.post<CredentialsResponse>("/credentials", {
-      company_name: companyName
-    })
+  async getAdapter(
+    adapterType: string
+  ): Promise<ApiResponse<GetAdapterResponse>> {
+    // get_adapter uses a different body shape (camelCase, no adapter_code)
+    try {
+      const response = await fetch(`${this.baseUrl}/get_adapter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          apiKey: this.auth.apiKey,
+          adapterType,
+          companyCode: this.auth.companyCode
+        })
+      })
+
+      const envelope = (await response.json()) as ApiEnvelope<GetAdapterResponse>
+
+      if (envelope.error || !response.ok) {
+        return {
+          success: false,
+          error: envelope.error ?? `${response.status} ${response.statusText}`
+        }
+      }
+
+      return { success: true, data: envelope.data ?? undefined }
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error)
+      }
+    }
   }
 
-  async get2FACode(
-    companyName: string
-  ): Promise<ApiResponse<TwoFACodeResponse>> {
-    return this.post<TwoFACodeResponse>("/2fa-code", {
-      company_name: companyName
-    })
+  async getCredentials(): Promise<ApiResponse<CredentialsResponse>> {
+    return this.post<CredentialsResponse>("/credentials")
+  }
+
+  async get2FACode(): Promise<ApiResponse<TwoFACodeResponse>> {
+    return this.post<TwoFACodeResponse>("/2fa-code")
   }
 
   async getSearches(): Promise<ApiResponse<SavedSearchesResponse>> {
-    return this.post<SavedSearchesResponse>("/searches", {})
+    return this.post<SavedSearchesResponse>("/searches")
   }
 
   async sendLoads(
-    companyName: string,
     searchUniqueName: string,
-    loads: ScrapedLoad[]
+    loads: LoadPayload[]
   ): Promise<ApiResponse<SendLoadsResponse>> {
     return this.post<SendLoadsResponse>("/loads", {
-      company_name: companyName,
       search_unique_name: searchUniqueName,
       loads
+    })
+  }
+
+  async getLoadsToBook(): Promise<ApiResponse<LoadsToBookResponse>> {
+    return this.post<LoadsToBookResponse>("/loads-to-book")
+  }
+
+  async updateLoadStatus(
+    loadId: string,
+    status: LoadStatus
+  ): Promise<ApiResponse<UpdateLoadStatusResponse>> {
+    return this.post<UpdateLoadStatusResponse>("/update-status", {
+      load_id: loadId,
+      status
     })
   }
 }
@@ -167,9 +182,7 @@ class RealApiStrategy implements ApiStrategy {
 // ============================================
 
 const DEFAULT_CONFIG: ApiConfig = {
-  baseUrl: "http://localhost:3001/api",
-  useMock: true,
-  mockLatency: 200
+  baseUrl: "https://dev-be.neblo.ai/api/extension"
 }
 
 export class ApiClient {
@@ -183,11 +196,8 @@ export class ApiClient {
   }
 
   private buildStrategy(): ApiStrategy {
-    if (this.config.useMock) {
-      return new MockApiStrategy(this.config.mockLatency ?? 200)
-    }
     if (!this.auth) {
-      throw new Error("AuthContext required for real API strategy")
+      return new UnconfiguredStrategy()
     }
     return new RealApiStrategy(this.config.baseUrl, this.auth)
   }
@@ -198,14 +208,18 @@ export class ApiClient {
     this.strategy = this.buildStrategy()
   }
 
-  getCredentials(
-    companyName: string
-  ): Promise<ApiResponse<CredentialsResponse>> {
-    return this.strategy.getCredentials(companyName)
+  getAdapter(
+    adapterType: string
+  ): Promise<ApiResponse<GetAdapterResponse>> {
+    return this.strategy.getAdapter(adapterType)
   }
 
-  get2FACode(companyName: string): Promise<ApiResponse<TwoFACodeResponse>> {
-    return this.strategy.get2FACode(companyName)
+  getCredentials(): Promise<ApiResponse<CredentialsResponse>> {
+    return this.strategy.getCredentials()
+  }
+
+  get2FACode(): Promise<ApiResponse<TwoFACodeResponse>> {
+    return this.strategy.get2FACode()
   }
 
   getSearches(): Promise<ApiResponse<SavedSearchesResponse>> {
@@ -213,16 +227,26 @@ export class ApiClient {
   }
 
   sendLoads(
-    companyName: string,
     searchUniqueName: string,
-    loads: ScrapedLoad[]
+    loads: LoadPayload[]
   ): Promise<ApiResponse<SendLoadsResponse>> {
-    return this.strategy.sendLoads(companyName, searchUniqueName, loads)
+    return this.strategy.sendLoads(searchUniqueName, loads)
+  }
+
+  getLoadsToBook(): Promise<ApiResponse<LoadsToBookResponse>> {
+    return this.strategy.getLoadsToBook()
+  }
+
+  updateLoadStatus(
+    loadId: string,
+    status: LoadStatus
+  ): Promise<ApiResponse<UpdateLoadStatusResponse>> {
+    return this.strategy.updateLoadStatus(loadId, status)
   }
 }
 
 // ============================================
-// Factory (backward-compatible export)
+// Factory
 // ============================================
 
 export function createApiClient(
@@ -231,3 +255,5 @@ export function createApiClient(
 ): ApiClient {
   return new ApiClient({ ...DEFAULT_CONFIG, ...config }, auth)
 }
+
+export type { AuthContext }
